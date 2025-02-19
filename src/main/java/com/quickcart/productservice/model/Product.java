@@ -25,10 +25,4 @@ public class Product extends BaseModel {
     private Category category;
 
     private Boolean isPrime;
-
-    public Product() {
-        setCreatedAt(new Date());
-        setLastUpdatedAt(new Date());
-        setState(State.ACTIVE);
-    }
 }

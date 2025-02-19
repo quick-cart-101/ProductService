@@ -33,7 +33,9 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        return productRepo.findAll();
+        List<Product> all = productRepo.findAll();
+        System.out.println(all);
+        return all;
     }
 
     @Override
