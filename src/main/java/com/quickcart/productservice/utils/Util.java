@@ -8,7 +8,7 @@ import com.quickcart.productservice.model.State;
 
 public class Util {
 
-    public Product from(ProductDto productDto) {
+    public static Product from(ProductDto productDto) {
         Product product = new Product();
         product.setState(State.ACTIVE);
         product.setId(productDto.getId());
@@ -25,7 +25,7 @@ public class Util {
         return product;
     }
 
-    public ProductDto from(Product product) {
+    public static ProductDto from(Product product) {
         ProductDto productDto = new ProductDto();
         productDto.setId(product.getId());
         productDto.setName(product.getName());
