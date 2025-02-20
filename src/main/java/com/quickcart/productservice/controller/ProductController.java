@@ -88,4 +88,12 @@ public class ProductController {
         productService.deleteProductById(productId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product with ID: " + productId + " successfully deleted.");
     }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductDto>> getProductsByCategoryId(@PathVariable UUID categoryId) {
+        List<Product> products = productService.getProductsByCategoryId(categoryId);
+        List<ProductDto> productDtos = products.stream().map(Util::from).toList();
+        return ResponseEntity.ok(productDtos);
+    }
+
 }

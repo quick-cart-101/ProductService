@@ -16,4 +16,6 @@ public interface IProductService {
     void deleteProductById(UUID productId);
 
     Product save(Product product);
+
+    List<Product> getProductsByCategoryId(UUID categoryId);
 }

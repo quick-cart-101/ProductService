@@ -13,6 +13,8 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.UUID;
 
+import static com.quickcart.productservice.utils.Constants.KEY_SEPARATOR;
+
 @Service
 @Slf4j
 public class ProductServiceImpl implements IProductService {
@@ -90,8 +92,13 @@ public class ProductServiceImpl implements IProductService {
         return productRepo.save(product);
     }
 
+    @Override
+    public List<Product> getProductsByCategoryId(UUID categoryId) {
+        return productRepo.findByCategory_Id(categoryId);
+    }
+
     private String getCacheKey(UUID productId) {
-        return productCacheKey + "::" + productId;
+        return productCacheKey + KEY_SEPARATOR + productId;
     }
 
 }
