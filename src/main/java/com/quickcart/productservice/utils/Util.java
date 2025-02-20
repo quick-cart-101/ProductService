@@ -16,7 +16,7 @@ public class Util {
         product.setPrice(productDto.getPrice());
         product.setImageUrl(productDto.getImageUrl());
         product.setDescription(productDto.getDescription());
-        if(productDto.getCategory() != null) {
+        if (productDto.getCategory() != null) {
             Category category = new Category();
             category.setId(productDto.getCategory().getId());
             category.setName(productDto.getCategory().getName());
@@ -32,7 +32,7 @@ public class Util {
         productDto.setDescription(product.getDescription());
         productDto.setPrice(product.getPrice());
         productDto.setImageUrl(product.getImageUrl());
-        if(product.getCategory() != null) {
+        if (product.getCategory() != null) {
             CategoryDto categoryDto = new CategoryDto();
             categoryDto.setName(product.getCategory().getName());
             categoryDto.setId(product.getCategory().getId());

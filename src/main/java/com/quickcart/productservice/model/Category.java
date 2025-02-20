@@ -15,7 +15,7 @@ import java.util.List;
 public class Category extends BaseModel {
     private String name;
     private String description;
-    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Product> products;
 }

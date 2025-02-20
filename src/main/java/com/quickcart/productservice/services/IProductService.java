@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IProductService {
-    Product getProductById(UUID productId) throws ProductNotFoundException;
+    Product getProductById(UUID productId);
 
     List<Product> getAllProducts();
 
-    Product replaceProduct(UUID productId,Product request) throws ProductNotFoundException;
+    Product replaceProduct(UUID productId, Product request);
+
+    void deleteProductById(UUID productId);
 
     Product save(Product product);
 }

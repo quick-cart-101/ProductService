@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -20,11 +21,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.quickcart.productservice.utils.Constants.AUTHORIZATION;
+import static com.quickcart.productservice.utils.Constants.BEARER_;
+import static com.quickcart.productservice.utils.Constants.ROLES;
+
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    @Value("${jwt.secret}")
+    String jwtSecret;
+
     private Key getSigningKey() {
-        //    @Value("${jwt.secret}")
-        String jwtSecret = "cc8538aa-df18-4dce-bd80-f60f439ae3aa";
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
@@ -32,8 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        String header = request.getHeader(AUTHORIZATION);
+        if (header == null || !header.startsWith(BEARER_)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -47,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .getBody();
 
             String username = claims.getSubject();
-            List<String> roles = claims.get("roles", List.class); // Extract roles
+            List<String> roles = claims.get(ROLES, List.class);
 
             Collection<GrantedAuthority> authorities = roles.stream()
                     .map(SimpleGrantedAuthority::new)

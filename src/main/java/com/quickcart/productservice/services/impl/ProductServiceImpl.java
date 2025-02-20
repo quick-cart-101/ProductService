@@ -5,10 +5,12 @@ import com.quickcart.productservice.model.Product;
 import com.quickcart.productservice.repositories.ProductRepo;
 import com.quickcart.productservice.services.IProductService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,41 +18,80 @@ import java.util.UUID;
 public class ProductServiceImpl implements IProductService {
 
     private final ProductRepo productRepo;
+    private final RedisTemplate<String, Product> redisTemplate;
 
-    public ProductServiceImpl(ProductRepo productRepo) {
+    @Value("${PRODUCT_ID_CACHE_KEY}")
+    private String productCacheKey;
+
+    public ProductServiceImpl(ProductRepo productRepo, RedisTemplate<String, Product> redisTemplate) {
         this.productRepo = productRepo;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     public Product getProductById(UUID productId) throws ProductNotFoundException {
-        Optional<Product> product = productRepo.findById(productId);
-        if(product.isEmpty()) {
-            log.error("Product with product ID: {} not found", productId);
-            throw new ProductNotFoundException("Product with ID: "+productId+" not available.");
+        String cacheKey = getCacheKey(productId);
+
+        Product cachedProduct = (Product) redisTemplate.opsForHash().get(cacheKey, productId);
+        if (!ObjectUtils.isEmpty(cachedProduct)) {
+            log.info("Cache hit for product ID: {}", productId);
+            return cachedProduct;
         }
-        return product.get();
+
+        return productRepo.findById(productId)
+                .map(product -> {
+                    redisTemplate.opsForHash().put(cacheKey, product.getId(), product);
+                    return product;
+                })
+                .orElseThrow(() -> {
+                    log.error("Product with ID {} not found", productId);
+                    return new ProductNotFoundException("Product with ID: " + productId + " not available.");
+                });
     }
 
     @Override
     public List<Product> getAllProducts() {
-        List<Product> all = productRepo.findAll();
-        System.out.println(all);
-        return all;
+        List<Product> allProducts = productRepo.findAll();
+        log.info("Fetched {} products", allProducts.size());
+        return allProducts;
     }
 
     @Override
-    public Product replaceProduct(UUID productId, Product product) throws ProductNotFoundException {
-        boolean productExists = productRepo.existsById(productId);
-        if(!productExists) {
-            log.error("Product with product ID: {} not found, failed to replace product: {}", productId, product);
-            throw new ProductNotFoundException("Product with ID: "+productId+" not available.");
+    public Product replaceProduct(UUID productId, Product product) {
+        if (!productRepo.existsById(productId)) {
+            log.error("Product with ID {} not found, failed to replace", productId);
+            throw new ProductNotFoundException("Product with ID: " + productId + " not available.");
         }
+
         product.setId(productId);
-        return productRepo.save(product);
+        Product updatedProduct = productRepo.save(product);
+        log.info("Product is updated with ID: {}", product);
+
+        // Update cache
+        redisTemplate.opsForHash().put(getCacheKey(productId), productId, updatedProduct);
+        return updatedProduct;
     }
+
+    @Override
+    public void deleteProductById(UUID productId) {
+        if (!productRepo.existsById(productId)) {
+            log.error("Product with ID {} not found, cannot delete", productId);
+            throw new ProductNotFoundException("Product with ID: " + productId + " not found.");
+        }
+
+        productRepo.deleteById(productId);
+        log.info("Product is deleted with ID: {}", productId);
+        redisTemplate.opsForHash().delete(getCacheKey(productId), productId);
+    }
+
 
     @Override
     public Product save(Product product) {
         return productRepo.save(product);
     }
+
+    private String getCacheKey(UUID productId) {
+        return productCacheKey + "::" + productId;
+    }
+
 }
