@@ -1,21 +1,19 @@
 package com.quickcart.productservice.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
+import lombok.experimental.SuperBuilder;
 
 @Setter
 @Getter
 @Entity
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category extends BaseModel {
     private String name;
     private String description;
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Product> products;
 }

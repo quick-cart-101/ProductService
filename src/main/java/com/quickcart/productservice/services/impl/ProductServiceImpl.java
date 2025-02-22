@@ -1,17 +1,23 @@
 package com.quickcart.productservice.services.impl;
 
+import com.quickcart.productservice.exceptions.CategoryNotFoundException;
 import com.quickcart.productservice.exceptions.ProductNotFoundException;
+import com.quickcart.productservice.model.Category;
 import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.repositories.CategoryRepo;
 import com.quickcart.productservice.repositories.ProductRepo;
 import com.quickcart.productservice.services.IProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.quickcart.productservice.utils.Constants.KEY_SEPARATOR;
 
@@ -20,21 +26,24 @@ import static com.quickcart.productservice.utils.Constants.KEY_SEPARATOR;
 public class ProductServiceImpl implements IProductService {
 
     private final ProductRepo productRepo;
+    private final CategoryRepo categoryRepo;
     private final RedisTemplate<String, Product> redisTemplate;
 
     @Value("${PRODUCT_ID_CACHE_KEY}")
     private String productCacheKey;
 
-    public ProductServiceImpl(ProductRepo productRepo, RedisTemplate<String, Product> redisTemplate) {
+    public ProductServiceImpl(ProductRepo productRepo, CategoryRepo categoryRepo, RedisTemplate<String, Product> redisTemplate) {
         this.productRepo = productRepo;
+        this.categoryRepo = categoryRepo;
         this.redisTemplate = redisTemplate;
     }
 
     @Override
+    @Transactional
     public Product getProductById(UUID productId) throws ProductNotFoundException {
-        String cacheKey = getCacheKey(productId);
+        String cacheKey = getCacheKey(productId.toString());
 
-        Product cachedProduct = (Product) redisTemplate.opsForHash().get(cacheKey, productId);
+        Product cachedProduct = (Product) redisTemplate.opsForHash().get(cacheKey, productId.toString());
         if (!ObjectUtils.isEmpty(cachedProduct)) {
             log.info("Cache hit for product ID: {}", productId);
             return cachedProduct;
@@ -42,7 +51,7 @@ public class ProductServiceImpl implements IProductService {
 
         return productRepo.findById(productId)
                 .map(product -> {
-                    redisTemplate.opsForHash().put(cacheKey, product.getId(), product);
+                    redisTemplate.opsForHash().put(cacheKey, product.getId().toString(), product);
                     return product;
                 })
                 .orElseThrow(() -> {
@@ -70,7 +79,7 @@ public class ProductServiceImpl implements IProductService {
         log.info("Product is updated with ID: {}", product);
 
         // Update cache
-        redisTemplate.opsForHash().put(getCacheKey(productId), productId, updatedProduct);
+        redisTemplate.opsForHash().put(getCacheKey(productId.toString()), productId.toString(), updatedProduct);
         return updatedProduct;
     }
 
@@ -83,21 +92,31 @@ public class ProductServiceImpl implements IProductService {
 
         productRepo.deleteById(productId);
         log.info("Product is deleted with ID: {}", productId);
-        redisTemplate.opsForHash().delete(getCacheKey(productId), productId);
+        redisTemplate.opsForHash().delete(getCacheKey(productId.toString()), productId);
     }
 
 
     @Override
-    public Product save(Product product) {
+    public Product saveProduct(Product product) {
+        Objects.requireNonNull(product, "Product must not be null");
+        Objects.requireNonNull(product.getCategory(), "Product category must not be null");
+
+        List<Category> categories = product.getCategory().stream()
+                .map(category -> categoryRepo.findById(category.getId())
+                        .orElseThrow(() -> new CategoryNotFoundException("Category with ID: " + category.getId() + " not found")))
+                .collect(Collectors.toList());
+
+        product.setCategory(categories);
         return productRepo.save(product);
     }
+
 
     @Override
     public List<Product> getProductsByCategoryId(UUID categoryId) {
         return productRepo.findByCategory_Id(categoryId);
     }
 
-    private String getCacheKey(UUID productId) {
+    private String getCacheKey(String productId) {
         return productCacheKey + KEY_SEPARATOR + productId;
     }
 

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static com.quickcart.productservice.utils.Constants.AUTHORIZATION;
 import static com.quickcart.productservice.utils.Constants.BEARER_;
 import static com.quickcart.productservice.utils.Constants.ROLES;
+import static com.quickcart.productservice.utils.Constants.ROLE_;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -57,8 +58,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             List<String> roles = claims.get(ROLES, List.class);
 
             Collection<GrantedAuthority> authorities = roles.stream()
-                    .map(SimpleGrantedAuthority::new)
+                    .map(role -> new SimpleGrantedAuthority(ROLE_ + role))
                     .collect(Collectors.toList());
+
 
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                     username, null, authorities
