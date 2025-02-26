@@ -1,6 +1,6 @@
 package com.quickcart.productservice.controller;
 
-import com.quickcart.productservice.model.Category;
+import com.quickcart.productservice.entities.Category;
 import com.quickcart.productservice.services.ICategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

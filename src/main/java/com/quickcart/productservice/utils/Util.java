@@ -2,9 +2,9 @@ package com.quickcart.productservice.utils;
 
 import com.quickcart.productservice.dto.CategoryDto;
 import com.quickcart.productservice.dto.ProductDto;
-import com.quickcart.productservice.model.Category;
-import com.quickcart.productservice.model.Product;
-import com.quickcart.productservice.model.State;
+import com.quickcart.productservice.entities.Category;
+import com.quickcart.productservice.entities.Product;
+import com.quickcart.productservice.entities.State;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 

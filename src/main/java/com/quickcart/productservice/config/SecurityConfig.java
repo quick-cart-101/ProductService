@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No sessions
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/products/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/products").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/products/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/products/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/categories/**").authenticated()

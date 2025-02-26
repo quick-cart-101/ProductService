@@ -1,6 +1,6 @@
 package com.quickcart.productservice.config;
 
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Product;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

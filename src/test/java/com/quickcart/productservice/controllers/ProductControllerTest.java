@@ -2,7 +2,7 @@ package com.quickcart.productservice.controllers;
 
 import com.quickcart.productservice.controller.ProductController;
 import com.quickcart.productservice.dto.ProductDto;
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Product;
 import com.quickcart.productservice.services.IProductService;
 import com.quickcart.productservice.utils.Util;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,8 +24,6 @@ import static org.mockito.Mockito.when;
 
 public class ProductControllerTest {
 
-    private MockMvc mockMvc;
-
     @Mock
     private IProductService productService;
 
@@ -35,7 +33,7 @@ public class ProductControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
 
     @Test
@@ -102,6 +100,7 @@ public class ProductControllerTest {
         productDto.setName("Product 1");
 
         Product product = Util.from(productDto);
+        assert product != null;
         product.setId(UUID.randomUUID());
 
         when(productService.saveProduct(product)).thenReturn(product);
@@ -118,6 +117,7 @@ public class ProductControllerTest {
         productDto.setName("Updated Product");
 
         Product product = Util.from(productDto);
+        assert product != null;
         product.setId(productId);
 
         when(productService.replaceProduct(productId, product)).thenReturn(product);

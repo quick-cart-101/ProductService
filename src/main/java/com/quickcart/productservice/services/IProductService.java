@@ -1,6 +1,6 @@
 package com.quickcart.productservice.services;
 
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Product;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package com.quickcart.productservice.repositories;
 
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

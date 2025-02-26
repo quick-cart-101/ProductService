@@ -1,7 +1,7 @@
 package com.quickcart.productservice.services;
 
 import com.quickcart.productservice.exceptions.CategoryNotFoundException;
-import com.quickcart.productservice.model.Category;
+import com.quickcart.productservice.entities.Category;
 import com.quickcart.productservice.repositories.CategoryRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,11 @@ public class CategoryServiceImplTest {
     private CategoryRepo categoryRepo;
 
 
-    private ICategoryService categoryService;
+    private final ICategoryService categoryService;
+
+    public CategoryServiceImplTest(ICategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @BeforeEach
     public void setUp() {

@@ -1,4 +1,4 @@
-package com.quickcart.productservice.model;
+package com.quickcart.productservice.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;

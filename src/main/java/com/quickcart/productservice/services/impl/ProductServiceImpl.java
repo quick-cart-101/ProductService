@@ -1,17 +1,15 @@
 package com.quickcart.productservice.services.impl;
 
-import com.quickcart.productservice.dto.ProductDto;
 import com.quickcart.productservice.exceptions.CategoryNotFoundException;
 import com.quickcart.productservice.exceptions.ProductNotFoundException;
-import com.quickcart.productservice.model.Category;
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Category;
+import com.quickcart.productservice.entities.Product;
 import com.quickcart.productservice.repositories.CategoryRepo;
 import com.quickcart.productservice.repositories.ProductRepo;
 import com.quickcart.productservice.services.IProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;

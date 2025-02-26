@@ -1,7 +1,7 @@
 package com.quickcart.productservice.services.impl;
 
 import com.quickcart.productservice.exceptions.CategoryNotFoundException;
-import com.quickcart.productservice.model.Category;
+import com.quickcart.productservice.entities.Category;
 import com.quickcart.productservice.repositories.CategoryRepo;
 import com.quickcart.productservice.services.ICategoryService;
 import org.springframework.stereotype.Service;

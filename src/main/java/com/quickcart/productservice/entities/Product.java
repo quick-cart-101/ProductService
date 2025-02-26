@@ -1,4 +1,4 @@
-package com.quickcart.productservice.model;
+package com.quickcart.productservice.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

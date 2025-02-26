@@ -1,7 +1,7 @@
 package com.quickcart.productservice.controllers;
 
 import com.quickcart.productservice.controller.CategoryController;
-import com.quickcart.productservice.model.Category;
+import com.quickcart.productservice.entities.Category;
 import com.quickcart.productservice.services.ICategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,6 @@ import static org.mockito.Mockito.when;
 
 public class CategoryControllerTest {
 
-    private MockMvc mockMvc;
-
     @Mock
     private ICategoryService categoryService;
 
@@ -33,7 +31,7 @@ public class CategoryControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(categoryController).build();
     }
 
     @Test

@@ -1,8 +1,8 @@
 package com.quickcart.productservice.services;
 
 import com.quickcart.productservice.exceptions.ProductNotFoundException;
-import com.quickcart.productservice.model.Category;
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Category;
+import com.quickcart.productservice.entities.Product;
 import com.quickcart.productservice.repositories.CategoryRepo;
 import com.quickcart.productservice.repositories.ProductRepo;
 import com.quickcart.productservice.services.impl.ProductServiceImpl;
@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +43,11 @@ class ProductServiceImplTest {
     private ProductServiceImpl productService;
 
     private Product product;
-    private UUID id = UUID.randomUUID();
+    private final UUID id = UUID.randomUUID();
+
+    ProductServiceImplTest(RedisTemplate<String, Product> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @BeforeEach
     void setUp() {
@@ -73,7 +78,7 @@ class ProductServiceImplTest {
 
     @Test
     void testGetAllProducts() {
-        when(productRepo.findAll()).thenReturn(Arrays.asList(product));
+        when(productRepo.findAll()).thenReturn(Collections.singletonList(product));
         List<Product> products = productService.getAllProducts();
         assertFalse(products.isEmpty());
         assertEquals(1, products.size());
@@ -169,13 +174,11 @@ class ProductServiceImplTest {
         product1.setId(productId1);
         product1.setName("Product 1");
 
-        List<Product> products = Arrays.asList(product1);
+        List<Product> products = List.of(product1);
 
         when(productRepo.findAllById(productIds)).thenReturn(products);
 
-        ProductNotFoundException exception = assertThrows(ProductNotFoundException.class, () -> {
-            productService.getProductsByIds(productIds);
-        });
+        ProductNotFoundException exception = assertThrows(ProductNotFoundException.class, () -> productService.getProductsByIds(productIds));
 
         assertEquals("Products not found for IDs: [" + productId2 + "]", exception.getMessage());
     }

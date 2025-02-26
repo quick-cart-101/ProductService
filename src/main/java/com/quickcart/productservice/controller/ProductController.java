@@ -1,7 +1,7 @@
 package com.quickcart.productservice.controller;
 
 import com.quickcart.productservice.dto.ProductDto;
-import com.quickcart.productservice.model.Product;
+import com.quickcart.productservice.entities.Product;
 import com.quickcart.productservice.services.IProductService;
 import com.quickcart.productservice.utils.Util;
 import org.springframework.http.HttpStatus;
