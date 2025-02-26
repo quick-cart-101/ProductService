@@ -57,4 +57,7 @@ public interface IProductService {
      * @return A list of {@link Product} entities that belong to the specified category.
      */
     List<Product> getProductsByCategoryId(UUID categoryId);
+
+    // add documentation
+    List<Product> getProductsByIds(List<UUID> productIds);
 }

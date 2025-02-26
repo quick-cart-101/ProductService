@@ -48,6 +48,19 @@ public class ProductController {
     }
 
     /**
+     * Retrieves products by their unique identifiers.
+     *
+     * @param productIds A list of unique identifiers (UUIDs) of the products to retrieve.
+     * @return A {@link ResponseEntity} containing a list of products as {@link ProductDto}.
+     */
+    @PostMapping("/bulk")
+    public ResponseEntity<List<ProductDto>> getProductsByProductIds(@RequestBody List<UUID> productIds) {
+        List<Product> products = productService.getProductsByIds(productIds);
+        List<ProductDto> productDtos = products.stream().map(Util::from).toList();
+        return ResponseEntity.ok(productDtos);
+    }
+
+    /**
      * Retrieves a product by its unique identifier.
      *
      * @param productId The unique identifier (UUID) of the product.

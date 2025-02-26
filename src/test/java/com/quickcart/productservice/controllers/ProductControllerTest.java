@@ -73,6 +73,30 @@ public class ProductControllerTest {
     }
 
     @Test
+    public void testGetProductsByProductIds() {
+        UUID productId1 = UUID.randomUUID();
+        UUID productId2 = UUID.randomUUID();
+        List<UUID> productIds = Arrays.asList(productId1, productId2);
+
+        Product product1 = new Product();
+        product1.setId(productId1);
+        product1.setName("Product 1");
+
+        Product product2 = new Product();
+        product2.setId(productId2);
+        product2.setName("Product 2");
+
+        List<Product> products = Arrays.asList(product1, product2);
+        List<ProductDto> productDtos = products.stream().map(Util::from).toList();
+
+        when(productService.getProductsByIds(productIds)).thenReturn(products);
+
+        ResponseEntity<List<ProductDto>> response = productController.getProductsByProductIds(productIds);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(productDtos, response.getBody());
+    }
+
+    @Test
     public void testCreateProduct() {
         ProductDto productDto = new ProductDto();
         productDto.setName("Product 1");

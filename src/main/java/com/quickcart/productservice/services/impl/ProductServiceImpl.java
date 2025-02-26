@@ -1,5 +1,6 @@
 package com.quickcart.productservice.services.impl;
 
+import com.quickcart.productservice.dto.ProductDto;
 import com.quickcart.productservice.exceptions.CategoryNotFoundException;
 import com.quickcart.productservice.exceptions.ProductNotFoundException;
 import com.quickcart.productservice.model.Category;
@@ -10,6 +11,7 @@ import com.quickcart.productservice.services.IProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -114,6 +116,24 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Product> getProductsByCategoryId(UUID categoryId) {
         return productRepo.findByCategory_Id(categoryId);
+    }
+
+    @Override
+    public List<Product> getProductsByIds(List<UUID> productIds) {
+        List<Product> products = productRepo.findAllById(productIds);
+        // Check if any IDs were not found
+        if (products.size() != productIds.size()) {
+            List<UUID> foundIds = products.stream()
+                    .map(Product::getId)
+                    .toList();
+
+            List<UUID> missingIds = productIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .toList();
+
+            throw new ProductNotFoundException("Products not found for IDs: " + missingIds);
+        }
+        return products;
     }
 
     private String getCacheKey(String productId) {
