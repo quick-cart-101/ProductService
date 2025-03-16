@@ -30,7 +30,7 @@ public class ProductServiceImpl implements IProductService {
     private final RedisTemplate<String, Product> redisTemplate;
 
     @Value("${PRODUCT_ID_CACHE_KEY}")
-    private String productCacheKey;
+    public String productCacheKey;
 
     public ProductServiceImpl(ProductRepo productRepo, CategoryRepo categoryRepo, RedisTemplate<String, Product> redisTemplate) {
         this.productRepo = productRepo;

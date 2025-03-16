@@ -1,12 +1,15 @@
-package com.quickcart.productservice.services;
+package com.quickcart.productservice.services.impl;
 
-import com.quickcart.productservice.exceptions.CategoryNotFoundException;
 import com.quickcart.productservice.entities.Category;
+import com.quickcart.productservice.exceptions.CategoryNotFoundException;
 import com.quickcart.productservice.repositories.CategoryRepo;
+import com.quickcart.productservice.services.ICategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,34 +18,30 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepo categoryRepo;
 
+    @InjectMocks
+    private CategoryServiceImpl categoryService;
 
-    private final ICategoryService categoryService;
-
-    public CategoryServiceImplTest(ICategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
+    private Category category;
+    private UUID categoryId;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        categoryId = UUID.randomUUID();
+        category = new Category();
+        category.setId(categoryId);
+        category.setName("Electronics");
     }
 
     @Test
     public void testSaveCategory() {
-        Category category = new Category();
-        category.setId(UUID.randomUUID());
-        category.setName("Electronics");
-
         when(categoryRepo.save(category)).thenReturn(category);
 
         Category savedCategory = categoryService.saveCategory(category);
@@ -51,15 +50,11 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetAllCategories() {
-        Category category1 = new Category();
-        category1.setId(UUID.randomUUID());
-        category1.setName("Electronics");
-
         Category category2 = new Category();
         category2.setId(UUID.randomUUID());
         category2.setName("Books");
 
-        List<Category> categories = Arrays.asList(category1, category2);
+        List<Category> categories = Arrays.asList(category, category2);
 
         when(categoryRepo.findAll()).thenReturn(categories);
 
@@ -69,11 +64,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testUpdateCategory() {
-        UUID categoryId = UUID.randomUUID();
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setName("Electronics");
-
         when(categoryRepo.findById(categoryId)).thenReturn(Optional.of(category));
         when(categoryRepo.save(category)).thenReturn(category);
 
@@ -83,11 +73,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testUpdateCategoryNotFound() {
-        UUID categoryId = UUID.randomUUID();
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setName("Electronics");
-
         when(categoryRepo.findById(categoryId)).thenReturn(Optional.empty());
 
         assertThrows(CategoryNotFoundException.class, () -> categoryService.updateCategory(categoryId, category));
@@ -95,8 +80,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testDeleteCategory() {
-        UUID categoryId = UUID.randomUUID();
-
         when(categoryRepo.existsById(categoryId)).thenReturn(true);
         doNothing().when(categoryRepo).deleteById(categoryId);
 
@@ -106,8 +89,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testDeleteCategoryNotFound() {
-        UUID categoryId = UUID.randomUUID();
-
         when(categoryRepo.existsById(categoryId)).thenReturn(false);
 
         assertThrows(CategoryNotFoundException.class, () -> categoryService.deleteCategory(categoryId));
@@ -115,11 +96,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategoryById() {
-        UUID categoryId = UUID.randomUUID();
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setName("Electronics");
-
         when(categoryRepo.findById(categoryId)).thenReturn(Optional.of(category));
 
         Category result = categoryService.getCategoryById(categoryId);
@@ -128,8 +104,6 @@ public class CategoryServiceImplTest {
 
     @Test
     public void testGetCategoryByIdNotFound() {
-        UUID categoryId = UUID.randomUUID();
-
         when(categoryRepo.findById(categoryId)).thenReturn(Optional.empty());
 
         assertThrows(CategoryNotFoundException.class, () -> categoryService.getCategoryById(categoryId));
